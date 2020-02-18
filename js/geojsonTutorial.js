@@ -22,7 +22,7 @@ var geojsonFeature = {
     }
 };
 
-L.geoJSON(geojsonFeature).addTo(map);
+L.geoJSON(geojsonFeature).addTo(mymap);
 
 var myLines = [{
     "type": "LineString",
@@ -50,7 +50,7 @@ var myStyle = {
 
 L.geoJSON(myLines, {
     style: myStyle
-}).addTo(map);
+}).addTo(mymap);
 
 var states = [{
     "type": "Feature",
@@ -87,7 +87,7 @@ L.geoJSON(states, {
             case 'Democrat':   return {color: "#0000ff"};
         }
     }
-}).addTo(map);
+}).addTo(mymap);
 
 var geojsonMarkerOptions = {
     radius: 8,
@@ -102,7 +102,7 @@ L.geoJSON(someGeojsonFeature, {
     pointToLayer: function (feature, latlng) {
         return L.circleMarker(latlng, geojsonMarkerOptions);
     }
-}).addTo(map);
+}).addTo(mymap);
 
 
 function onEachFeature(feature, layer) {
@@ -127,7 +127,7 @@ var geojsonFeature = {
 
 L.geoJSON(geojsonFeature, {
     onEachFeature: onEachFeature
-}).addTo(map);
+}).addTo(mymap);
 
 var someFeatures = [{
     "type": "Feature",
@@ -155,4 +155,4 @@ L.geoJSON(someFeatures, {
     filter: function(feature, layer) {
         return feature.properties.show_on_map;
     }
-}).addTo(map);
+}).addTo(mymap);
