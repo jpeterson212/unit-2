@@ -66,3 +66,6 @@ function getData(){
 
 
 $(document).ready(createMap);
+
+
+//https://www.infoplease.com/business-finance/poverty-and-income/capita-personal-income-state
