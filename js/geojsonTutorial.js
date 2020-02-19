@@ -1,4 +1,4 @@
-var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+var mymap = L.map('mapid').setView([39.75621, -104.99404], 4);
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -8,7 +8,6 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 }).addTo(mymap);
 
 //Lines above copied from quickstart!
-
 var geojsonFeature = {
     "type": "Feature",
     "properties": {
@@ -21,7 +20,6 @@ var geojsonFeature = {
         "coordinates": [-104.99404, 39.75621]
     }
 };
-
 L.geoJSON(geojsonFeature).addTo(mymap);
 
 var myLines = [{
@@ -31,6 +29,10 @@ var myLines = [{
     "type": "LineString",
     "coordinates": [[-105, 40], [-110, 45], [-115, 55]]
 }];
+
+var myLayer = L.geoJSON().addTo(mymap);
+myLayer.addData(geojsonFeature);
+
 
 
 
@@ -89,6 +91,7 @@ L.geoJSON(states, {
     }
 }).addTo(mymap);
 
+
 var geojsonMarkerOptions = {
     radius: 8,
     fillColor: "#ff7800",
@@ -98,12 +101,11 @@ var geojsonMarkerOptions = {
     fillOpacity: 0.8
 };
 
-L.geoJSON(someGeojsonFeature, {
+L.geoJSON(geojsonFeature, {
     pointToLayer: function (feature, latlng) {
         return L.circleMarker(latlng, geojsonMarkerOptions);
     }
 }).addTo(mymap);
-
 
 function onEachFeature(feature, layer) {
     // does this feature have a property named popupContent?
@@ -128,6 +130,7 @@ var geojsonFeature = {
 L.geoJSON(geojsonFeature, {
     onEachFeature: onEachFeature
 }).addTo(mymap);
+
 
 var someFeatures = [{
     "type": "Feature",
