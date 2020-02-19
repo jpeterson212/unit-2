@@ -1,3 +1,4 @@
+//Based off adaptedTutorial, income data added.
 //Create global map variable.
 var map;
 
@@ -72,63 +73,5 @@ function adaptedAjax(){
 // elements to the map.
 $(document).ready(createMap);
 
-
-
-//
-// function onEachFeature(feature, layer) {
-//     var popupContent = "";
-//     if (feature.properties) {
-//         for (var property in feature.properties){
-//             popupContent += "<p>" + property + ": " + feature.properties[property] + "</p>";
-//         }
-//           layer.bindPopup(popupContent);
-//     };
-//   };
-//
-// // //function to retrieve the data and place it on the map
-// // function getData(map){
-// //     $.ajax("data/income.geojson", function(response){
-// //
-// //             //create a Leaflet GeoJSON layer and add it to the map
-// // L.geoJson(response, {
-// //     onEachFeature: onEachFeature
-// // }).addTo(map);
-// //     });
-// // };
-//
-// function getData(){
-//   //$.getJSON("data/income.geojson", function(response){
-//     var geojsonMarkerOptions = {
-//       radius: 8,
-//       fillColor: "#ff7800",
-//       color: "#000",
-//       weight: 1,
-//       opacity: 1,
-//       fillOpacity: 0.8
-//     };
-//     L.geoJson(response, {
-//       pointToLayer: function (feature, latlng){
-//         return L.circleMarker(latlng, geojsonMarkerOptions);
-//       }
-//     }).addTo(map);
-//   };
-// //Ajax function to retrieve the correct data
-// // from the data folder, data type json. Without this function,
-// // the data from Megacities (map.geojson) wouldn't appear/ be called.
-// function adaptedAjax(){
-//     var data;
-//     $.ajax("data/map.geojson", {
-//       dataType: 'json',
-//       success: function(response){
-//         data = response;
-//         getData(data);
-//       }
-//     });
-//     return data
-// };
-
-
-//$(document).ready(createMap);
-
-
+//Source Data from :
 //https://www.infoplease.com/business-finance/poverty-and-income/capita-personal-income-state
