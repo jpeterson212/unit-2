@@ -17,6 +17,32 @@ function createMap(){
     getData();
 };
 
+//added at Example 2.3 line 20...function to attach popups to each mapped feature
+function onEachFeature(feature, layer) {
+    //no property named popupContent; instead, create html string with all properties
+    var cities = "Cities, Pop_1985, Pop_1990, Pop_1995, Pop_2000, Pop_2005, Pop_2010, Pop_2015"
+      if (feature.properties) {
+        
+        //loop to add feature property names and values to html string
+        for (var property in feature.properties){
+            cities += "<p>" + property + ": " + feature.properties[property] + "</p>";
+        }
+        layer.bindPopup(cities);
+    };
+};
+
+//function to retrieve the data and place it on the map
+function getData(map){
+    //load the data
+    $.getJSON("data/map.geojson", function(response){
+
+            //create a Leaflet GeoJSON layer and add it to the map
+            L.geoJson(response, {
+                onEachFeature: onEachFeature
+            }).addTo(map);
+    });
+};
+
 function getData(){
   $.getJSON("data/map.geojson", function(response){
     var geojsonMarkerOptions = {
