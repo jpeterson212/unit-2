@@ -1,3 +1,4 @@
+//Setting map view.
 var mymap = L.map('mapid').setView([39.75621, -104.99404], 4);
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -7,14 +8,14 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
     accessToken: 'pk.eyJ1IjoicGV0ZXJzb24yIiwiYSI6ImNrNmpza3ZwNDAweXEzZXF0bGxmb2g5eTQifQ.10E8d50dRzp7rkDlUiEj_g'
 }).addTo(mymap);
 
-//Lines above copied from quickstart!
+//Create function that will house variables.
 function onEachFeature(feature, layer) {
-    // does this feature have a property named popupContent?
     if (feature.properties && feature.properties.popupContent) {
         layer.bindPopup(feature.properties.popupContent);
     }
 }
 
+//Create variable that creates point
 var geojsonFeature = {
     "type": "Feature",
     "properties": {
@@ -32,7 +33,7 @@ L.geoJSON(geojsonFeature, {
     onEachFeature: onEachFeature
 }).addTo(mymap);
 
-
+//This variable make two lines on the map.
 var myLines = [{
     "type": "LineString",
     "coordinates": [[-100, 40], [-105, 45], [-110, 55]]
@@ -41,7 +42,7 @@ var myLines = [{
     "coordinates": [[-105, 40], [-110, 45], [-115, 55]]
 }];
 
-
+//This sets the color and thickness of the lines we just created.
 var myStyle = {
     "color": "#ff7800",
     "weight": 5,
@@ -52,7 +53,7 @@ L.geoJSON(myLines, {
     style: myStyle
 }).addTo(mymap);
 
-
+//This will outline, and shade in two different colors two individual states.
 var states = [{
     "type": "Feature",
     "properties": {"party": "Republican"},
@@ -90,7 +91,7 @@ L.geoJSON(states, {
     }
 }).addTo(mymap);
 
-
+//This creates the circle marker.
 var geojsonMarkerOptions = {
     radius: 8,
     fillColor: "#ff7800",
