@@ -1,5 +1,6 @@
-//Setting map view.
+//Setting map view and importing tile from mapbox.
 var mymap = L.map('mapid').setView([39.75621, -104.99404], 4);
+
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -8,14 +9,7 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
     accessToken: 'pk.eyJ1IjoicGV0ZXJzb24yIiwiYSI6ImNrNmpza3ZwNDAweXEzZXF0bGxmb2g5eTQifQ.10E8d50dRzp7rkDlUiEj_g'
 }).addTo(mymap);
 
-//Create function that will house variables.
-function onEachFeature(feature, layer) {
-    if (feature.properties && feature.properties.popupContent) {
-        layer.bindPopup(feature.properties.popupContent);
-    }
-}
-
-//Create variable that creates point
+//Create variable that creates feature on map.
 var geojsonFeature = {
     "type": "Feature",
     "properties": {
@@ -29,9 +23,8 @@ var geojsonFeature = {
     }
 };
 
-L.geoJSON(geojsonFeature, {
-    onEachFeature: onEachFeature
-}).addTo(mymap);
+L.geoJSON(geojsonFeature).addTo(mymap);
+
 
 //This variable make two lines on the map.
 var myLines = [{
