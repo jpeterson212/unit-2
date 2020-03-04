@@ -18,17 +18,6 @@ function createMap(){
 
     getData();
     createSequenceControls();
-
-    calcMinValue(data)
-    calcPropRadius(attValue)
-    onEachFeature(feature, layer)
-    pointToLayer(feature, latlng, attributes)
-    createPropSymbols(response,attributes)
-    getData(map)
-  //  createSequenceControls(attributes)
-    processData(data)
-    updatePropSymbols(attribute)
-    //calcMinValue(data);
 };
 
 function calcMinValue(data){
