@@ -1,3 +1,4 @@
+// global variables
 var map;
 var minValue;
 //Map function that all variables and elements are held.
@@ -31,7 +32,7 @@ function createMap(){
 
 
 };
-
+//Calculate the min value of the proportional symbol
 function calcMinValue(data){
     var allValues = [];
 
@@ -106,6 +107,7 @@ function adaptedAjax(){
   return data
 }
 
+//This function creates buttons of forward and backward
 function createSequenceControls(attributes){
       console.log('Here sequence')
       //create range input element (slider)
@@ -155,6 +157,7 @@ function createSequenceControls(attributes){
       });
   };
 
+
   function processData(data){
       //empty array to hold attributes
       var attributes = [];
@@ -172,7 +175,7 @@ function createSequenceControls(attributes){
       return attributes;
   };
 
-
+//Here we create function to update proportional symbols as we click through the sequence.
   function updatePropSymbols(attribute){
       map.eachLayer(function(layer){
           if (layer.feature && layer.feature.properties[attribute]){
