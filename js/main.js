@@ -20,71 +20,75 @@ function createMap(){
     getData(map);
 };
 
-//added section from previous activity
-//Popup function where city population data will be returned.
-function onEachFeature(feature, layer) {
+// //added section from previous activity
+// //Popup function where city population data will be returned.
+// function onEachFeature(feature, layer) {
+//
+//     var popupContent = "";
+//     if (feature.properties) {
+//         for (var property in feature.properties){
+//
+//             popupContent += "<p>" + property + ": " + feature.properties[property] + "</p>";
+//         }
+//         layer.bindPopup(popupContent);
+//     };
+//   };
 
-    var popupContent = "";
-    if (feature.properties) {
-        for (var property in feature.properties){
-
-            popupContent += "<p>" + property + ": " + feature.properties[property] + "</p>";
-        }
-        layer.bindPopup(popupContent);
-    };
-  };
-
-//Creates circle markers based on location.
-function getData(response){
-    var geojsonMarkerOptions = {
-      radius: 8,
-      fillColor: "#ff7800",
-      color: "#000",
-      weight: 1,
-      opacity: 1,
-      fillOpacity: 0.8
-    };
-
-    console.log('Here')
-
-L.geoJson(response, {
-      pointToLayer: function (feature, latlng){
-        return L.circleMarker(latlng, geojsonMarkerOptions);
-      },
-      onEachFeature: onEachFeature
-
-    }).addTo(map);
-  };
-
-//Ajax function to retrieve the correct data
-// from the data folder, data type json. Without this function,
-// the data from Megacities (map.geojson) wouldn't appear/ be called.
-function adaptedAjax(){
-  var data;
-  $.ajax("data/mediandata.geojson", {
-    dataType: 'json',
-    success: function(response){
-      data = response;
-      getData(data);
-      console.log('Here')
-    }
-  });
-  return data
-}
+// //Creates circle markers based on location.
+// function getData(response){
+//     var geojsonMarkerOptions = {
+//       radius: 8,
+//       fillColor: "#ff7800",
+//       color: "#000",
+//       weight: 1,
+//       opacity: 1,
+//       fillOpacity: 0.8
+//     };
+//
+//     console.log('Here')
+//
+// L.geoJson(response, {
+//       pointToLayer: function (feature, latlng){
+//         return L.circleMarker(latlng, geojsonMarkerOptions);
+//       },
+//       onEachFeature: onEachFeature
+//
+//     }).addTo(map);
+//   };
+//
+// //Ajax function to retrieve the correct data
+// // from the data folder, data type json. Without this function,
+// // the data from Megacities (map.geojson) wouldn't appear/ be called.
+// function adaptedAjax(){
+//   var data;
+//   $.ajax("data/mediandata.geojson", {
+//     dataType: 'json',
+//     success: function(response){
+//       data = response;
+//       getData(data);
+//       console.log('Here')
+//     }
+//   });
+//   return data
+// }
 
 //Above till here is the lines added
 
 function calcMinValue(data){
-  var allValues = [];
-  for(var state of data.features){
-    for (var year = 2012; year <= 2018; year+=1){
-      var value = state.properties["pop"+ String(year)];
-      allValues.push(value);
-    }
-  }
+    var allValues = [];
+
+    for(var state of data.features){
+
+          for (var year = 2012; year <= 2018; year+=1){
+
+              var value = state.properties["State"+ String(year)];
+
+              allValues.push(value);
+          }
+      }
   //get minium values of our array
-  var minValue = Math.min(...allValues)
-  return minValue;
+      var minValue = Math.min(...allValues)
+      return minValue;
 }
 
 //calculate the radius of earch proportional symbol
@@ -136,11 +140,15 @@ function pointToLayer(feature, latlng, attributes){
     var layer = L.circleMarker(latlng, geojsonMarkerOptions);
 
     //build popup content string
-    var popupContent = "<p><b>City:</b> " + feature.properties.City + "</p>";
+    var popupContent = "<p><b>City:</b> " + feature.properties.State + "</p>";
     //popupContent += "<p><b>Median income in " + attribute + ":</b> " + feature.properties[attribute] + " dollars</p>";
 
-    var year = attribute.split("_")[0];
-    popupContent += "<p><b>Median income in " + year + ":</b> " + feature.properties[attribute] + " dollars</p>";
+
+    //var popupContent += "<p>" + property + ": " + feature.properties[property] + "</p>";
+
+
+//    var year = attribute.split(" ")[1];
+//    popupContent += "<p><b>Median income in " + year + ":</b> " + feature.properties[attribute] + " dollars</p>";
 
     //bind the popup to the circle marker
     layer.bindPopup(popupContent,{offset: new L.Point(0,-geojsonMarkerOptions.radius)});
@@ -149,47 +157,12 @@ function pointToLayer(feature, latlng, attributes){
     return layer;
 };
 
-
-//Step 3: Add circle arkers for point features to the map
-function createPropSymbols(data){
-  var attribute = '2018';
-
-  var geojsonMarkerOptions = {
-    fillColor: "#ff7800",
-    color: "#fff",
-    weight: 1,
-    opacity: 1,
-    fillOpacity: 0.8,
-    radius: 8
-  };
-
-  L.geoJson(data, {
-      pointToLayer: function (feature, latlon) {
-        //return pointToLayer(feature, latlon, attributes);
-        var attValue = Number(feature.properties[attribute]);
-        //geojsonMarkerOptions.radius = calcPropRadius(attValue);
-        //return L.circleMarker(latlng, geojsonMarkerOptions);
-        return L.circleMarker(latlon, geojsonMarkerOptions);
-      }
-    }).addTo(map)
-
-};
-
-
-
-//Step 2: Import GeoJSON data
-function getData(map){
-
-     //load the data
-//     $.getJSON("data/mediandata.geojson", function(response){
-     $.ajax("data/mediandata.geojson", function(response){
-
-          //calculate minimum data value
-          minValue = calcMinValue(response);
-
-          //call function to create proportional symbols
-          createPropSymbols(response);
-     });
+function createPropSymbols(response,attributes){
+  L.geoJson(response, {
+          pointToLayer : function(feature, latlng){
+            return pointToLayer(feature, latlng, attributes);
+          }
+  }).addTo(map);
 };
 
 function getData(map){
@@ -220,9 +193,8 @@ function createSequenceControls(attributes){
       $('#panel').append('<button class="step" id="reverse">Reverse</button>');
       $('#panel').append('<button class="step" id="forward">Forward</button>');
 
-    //  $('#reverse').html('<img src="img/reverse.png">');
-    //  $('#forward').html('<img src="img/forward.png">');
-
+      //$('#reverse').html('<img src="img/noun_back_37216.png">');
+    //  $('#forward').html('<img src="img/noun_forward_2812173.png">');
 
       //Example 3.14 line 2...Step 5: click listener for buttons
       $('.step').click(function(){
@@ -252,6 +224,110 @@ function createSequenceControls(attributes){
         updatePropSymbols(attributes[index]);
       });
   };
+
+
+//
+// //Step 3: Add circle arkers for point features to the map
+// function createPropSymbols(data){
+//   var attribute = '2018';
+//
+//   var geojsonMarkerOptions = {
+//     fillColor: "#ff7800",
+//     color: "#fff",
+//     weight: 1,
+//     opacity: 1,
+//     fillOpacity: 0.8,
+//     radius: 8
+//   };
+//
+//   L.geoJson(data, {
+//       pointToLayer: function (feature, latlon) {
+//         //return pointToLayer(feature, latlon, attributes);
+//         var attValue = Number(feature.properties[attribute]);
+//         //geojsonMarkerOptions.radius = calcPropRadius(attValue);
+//         //return L.circleMarker(latlng, geojsonMarkerOptions);
+//         return L.circleMarker(latlon, geojsonMarkerOptions);
+//       }
+//     }).addTo(map)
+//
+// };
+//
+//
+//
+// //Step 2: Import GeoJSON data
+// function getData(map){
+//
+//      //load the data
+// //     $.getJSON("data/mediandata.geojson", function(response){
+//      $.ajax("data/mediandata.geojson", function(response){
+//
+//           //calculate minimum data value
+//           minValue = calcMinValue(response);
+//
+//           //call function to create proportional symbols
+//           createPropSymbols(response);
+//      });
+// };
+
+// function getData(map){
+//   var mydata;
+//     $.getJSON("data/mediandata.geojson", function(response){
+//
+//       var attributes = processData(response);
+//
+//       minValue = calcMinValue(response);
+//
+//       createPropSymbols(response, attributes);
+//
+//       createSequenceControls(attributes);
+//     //createPropSymbols(response);
+//   });
+// };
+//
+// function createSequenceControls(attributes){
+//       console.log('Here sequence')
+//       //create range input element (slider)
+//       $('#panel').append('<input class="range-slider" type="range">');
+//       $('.range-slider').attr({
+//         max: 8,
+//         min: 0,
+//         value: 0,
+//         step: 1
+//       });
+//       $('#panel').append('<button class="step" id="reverse">Reverse</button>');
+//       $('#panel').append('<button class="step" id="forward">Forward</button>');
+//
+//       //$('#reverse').html('<img src="img/noun_back_37216.png">');
+//     //  $('#forward').html('<img src="img/noun_forward_2812173.png">');
+//
+//       //Example 3.14 line 2...Step 5: click listener for buttons
+//       $('.step').click(function(){
+//     //get the old index value
+//         var index = $('.range-slider').val();
+//
+//     //Step 6: increment or decrement depending on button clicked
+//         if ($(this).attr('id') == 'forward'){
+//           index++;
+//         //Step 7: if past the last attribute, wrap around to first attribute
+//           index = index > 7 ? 0 : index;
+//         } else if ($(this).attr('id') == 'reverse'){
+//           index--;
+//         //Step 7: if past the first attribute, wrap around to last attribute
+//           index = index < 0 ? 7 : index;
+//           console.log('Here sequence 2')
+//         };
+//
+//     //Step 8: update slider
+//         $('.range-slider').val(index);
+//
+//         updatePropSymbols(attributes[index]);
+//       });
+//
+//       $('.range-slider').on('input', function(){
+//         var index =$(this).val();
+//         updatePropSymbols(attributes[index]);
+//       });
+//   };
 
 //Above Example 3.10...Step 3: build an attributes array from the data
 function processData(data){
