@@ -5,7 +5,7 @@
 }
 
 #panel {
-    width: 16%;
+    width: 25%;
     padding: 20px;
     display: inline-block;
     vertical-align: top;
@@ -14,7 +14,7 @@
 }
 
 .range-slider {
-    width: 55%;
+    width: 35%;
 }
 
 .step {

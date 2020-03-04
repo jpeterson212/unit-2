@@ -18,6 +18,18 @@ function createMap(){
 
     getData();
     createSequenceControls();
+
+    // calcMinValue(data)
+    // calcPropRadius(attValue)
+    // onEachFeature(feature, layer)
+    // pointToLayer(feature, latlng, attributes)
+    // createPropSymbols(response,attributes)
+    // getData(map)
+    // createSequenceControls(attributes)
+     processData(data)
+    // updatePropSymbols(attribute)
+
+
 };
 
 function calcMinValue(data){
@@ -142,6 +154,24 @@ function createSequenceControls(attributes){
         updatePropSymbols(attributes[index]);
       });
   };
+
+  function processData(data){
+      //empty array to hold attributes
+      var attributes = [];
+
+      //properties of the first feature in the dataset
+      var properties = data.features[0].properties;
+
+      //push each attribute name into attributes array
+      for (var attribute in properties){
+          //only take attributes with population values
+          if (attribute.indexOf("Pop") > -1){
+              attributes.push(attribute);
+          };
+      };
+      return attributes;
+  };
+
 
   function updatePropSymbols(attribute){
       map.eachLayer(function(layer){
