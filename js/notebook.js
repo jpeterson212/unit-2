@@ -1,5 +1,5 @@
 var map;
-
+var minValue;
 //Map function that all variables and elements are held.
 function createMap(){
     //create the map
@@ -18,7 +18,48 @@ function createMap(){
 
     getData();
     createSequenceControls();
+    calcMinValue(data);
 };
+
+
+
+
+
+
+function calcMinValue(data){
+    var allValues = [];
+
+    for(var state of data.features){
+
+          for (var year = 2012; year <= 2018; year+=1){
+
+              var value = state.properties["State"+ String(year)];
+
+              allValues.push(value);
+          }
+      }
+  //get minium values of our array
+      var minValue = Math.min(...allValues)
+      return minValue;
+}
+
+//calculate the radius of earch proportional symbol
+function calcPropRadius(attValue) {
+  //constant factor adjust symbol sizes evenly
+  var minRadius = 5;
+  //Flannery Appearance Compensation formula
+  var radius = 1.0083 * Math.pow(attValue/minValue,0.5715) * minRadius
+  return radius;
+};
+
+
+
+
+
+
+
+
+
 
 
 //Popup function where city population data will be returned.
@@ -456,5 +497,16 @@ function createSequenceControls(attributes){
           };
       });
   };
+
+  // calcMinValue(data)
+  // calcPropRadius(attValue)
+  // onEachFeature(feature, layer)
+  // pointToLayer(feature, latlng, attributes)
+  // createPropSymbols(response,attributes)
+  // getData(map)
+  // createSequenceControls(attributes)
+  // processData(data)
+  // updatePropSymbols(attribute)
+
 
 $(document).ready(createMap);
