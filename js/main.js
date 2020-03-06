@@ -1,10 +1,12 @@
 // global variables
 var map;
 var minValue;
+var SequenceControls
+var Legend;
 //Map function that all variables and elements are held.
 function createMap(){
     //create the map
-    var data = adaptedAjax();
+    //var data = adaptedAjax();
     map = L.map('mapid', {
         center: [45, -100],
         zoom: 3
@@ -17,20 +19,7 @@ function createMap(){
         accessToken: 'pk.eyJ1IjoicGV0ZXJzb24yIiwiYSI6ImNrNmpza3ZwNDAweXEzZXF0bGxmb2g5eTQifQ.10E8d50dRzp7rkDlUiEj_g'
     }).addTo(map);
 
-    getData();
-    createSequenceControls();
-
-    // calcMinValue(data)
-    // calcPropRadius(attValue)
-    // onEachFeature(feature, layer)
-    // pointToLayer(feature, latlng, attributes)
-    // createPropSymbols(response,attributes)
-    // getData(map)
-    // createSequenceControls(attributes)
-    // processData(data)
-    // updatePropSymbols(attribute)
-
-
+    getData(map);
 };
 //Calculate the min value of the proportional symbol
 function calcMinValue(data){
@@ -73,41 +62,81 @@ function onEachFeature(feature, layer) {
     };
   };
 
-//Creates circle markers based on location.
-function getData(response){
+function createPopupContent(properties, attribute){
+    var popupContent = "<p><b>Median income:</b> " + year + ":</b> " + properties[attribute] + " dollars</p>";
+
+    return popupcontent;
+};
+
+function pointToLayer(feature, latlng, attributes){
+    //Determine which attribute to visualize with proportional symbols
+    //var attribute = "2018";
+    var attribute = attributes[0];
+  //  console.log(attribute)
+    //create marker options
     var geojsonMarkerOptions = {
-      radius: 8,
-      fillColor: "#ff7800",
-      color: "#000",
-      weight: 1,
-      opacity: 1,
-      fillOpacity: 0.8
+        fillColor: "#ff7800",
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8,
+        radius: 8
     };
-L.geoJson(response, {
-      pointToLayer: function (feature, latlng){
-        return L.circleMarker(latlng, geojsonMarkerOptions);
-      },
-      onEachFeature: onEachFeature
 
-    }).addTo(map);
-  };
+    //For each feature, determine its value for the selected attribute
+    var attValue = Number(feature.properties[attribute]);
 
-//Ajax function to retrieve the correct data
-// from the data folder, data type json. Without this function,
-// the data from Megacities (map.geojson) wouldn't appear/ be called.
-function adaptedAjax(){
-  var data;
-  $.ajax("data/mediandata.geojson", {
-    dataType: 'json',
-    success: function(response){
-      data = response;
-      getData(data);
-    }
+    //Give each feature's circle marker a radius based on its attribute value
+    geojsonMarkerOptions.radius = calcPropRadius(attValue);
+
+    //create circle marker layer
+    var layer = L.circleMarker(latlng, geojsonMarkerOptions);
+
+    //build popup content string
+    var popupContent = createPopupContent(feature.properties, attribute);
+    //var popupContent = "<p><b>City:</b> " + feature.properties.State + "</p>";
+    //popupContent += "<p><b>Median income in " + attribute + ":</b> " + feature.properties[attribute] + " dollars</p>";
+
+
+    //var popupContent += "<p>" + property + ": " + feature.properties[property] + "</p>";
+
+
+//    var year = attribute.split(" ")[1];
+//    popupContent += "<p><b>Median income in " + year + ":</b> " + feature.properties[attribute] + " dollars</p>";
+
+    //bind the popup to the circle marker
+    layer.bindPopup(popupContent,{offset: new L.Point(0,-geojsonMarkerOptions.radius)});
+
+    //return the circle marker to the L.geoJson pointToLayer option
+    return layer;
+};
+
+function createPropSymbols(response,attributes){
+  L.geoJson(response, {
+          pointToLayer : function(feature, latlng){
+            return pointToLayer(feature, latlng, attributes);
+          }
+  }).addTo(map);
+};
+
+function getData(map){
+    var mydata;
+      $.getJSON("data/mediandata.geojson", function(response){
+
+        var attributes = processData(response);
+
+        minValue = calcMinValue(response);
+
+        createPropSymbols(response,attributes);
+
+        SequenceControls = createSequenceControls(attributes);
+        Legend = createLegend(attributes);
+    //createPropSymbols(response);
   });
-  return data
-}
+};
 
-//This function creates buttons of forward and backward
+
+//HERE
 function createSequenceControls(attributes){
       console.log('Here sequence')
       //create range input element (slider)
@@ -121,8 +150,9 @@ function createSequenceControls(attributes){
       $('#panel').append('<button class="step" id="reverse">Reverse</button>');
       $('#panel').append('<button class="step" id="forward">Forward</button>');
 
-      //$('#reverse').html('<img src="img/noun_back_37216.png">');
-    //  $('#forward').html('<img src="img/noun_forward_2812173.png">');
+// add our own buttons
+      $('#reverse').html('<img src="img/noun_back_37216.png">');
+      $('#forward').html('<img src="img/noun_forward_2812173.png">');
 
       //Example 3.14 line 2...Step 5: click listener for buttons
       $('.step').click(function(){
@@ -144,11 +174,7 @@ function createSequenceControls(attributes){
     //Step 8: update slider
         $('.range-slider').val(index);
 
-
-        //updatePropSymbols(attributes[index]);
-
-        updatePropSymbols([index]);
-
+        updatePropSymbols(attributes[index]);
       });
 
       $('.range-slider').on('input', function(){
@@ -156,6 +182,7 @@ function createSequenceControls(attributes){
         updatePropSymbols(attributes[index]);
       });
   };
+//HERE
 
 
   function processData(data){
@@ -168,47 +195,133 @@ function createSequenceControls(attributes){
       //push each attribute name into attributes array
       for (var attribute in properties){
           //only take attributes with population values
-          if (attribute.indexOf("Pop") > -1){
+          if (attribute.indexOf("") > -1){
               attributes.push(attribute);
           };
       };
       return attributes;
   };
 
-//Here we create function to update proportional symbols as we click through the sequence.
-  function updatePropSymbols(attribute){
-      map.eachLayer(function(layer){
-          if (layer.feature && layer.feature.properties[attribute]){
-              //update the layer style and popup
-              var props = layer.feature.properties;
+  //Here we create function to update proportional symbols as we click through the sequence.
+    function updatePropSymbols(attribute){
+        map.eachLayer(function(layer){
+            if (layer.feature && layer.feature.properties[attribute]){
+                //update the layer style and popup
+                var props = layer.feature.properties;
 
-              //update each feature's radius based on new attribute values
-              var radius = calcPropRadius(props[attribute]);
-              layer.setRadius(radius);
+                //update each feature's radius based on new attribute values
+                var radius = calcPropRadius(props[attribute]);
+                layer.setRadius(radius);
 
-              //add city to popup content string
-              var popupContent = "<p><b>City:</b> " + props.City + "</p>";
+                //add city to popup content string
+                //var popupContent = "<p><b>City:</b> " + props.City + "</p>";
+                var popupContent = createPopupCotent(props, attribute);
+                popup = layer.getPopup();
+                popup.setContent(popupContent).update();
 
-              //add formatted attribute to panel content string
-              var year = attribute.split("_")[1];
-              popupContent += "<p><b>Median income in " + year + ":</b> " + props[attribute] + " dollars</p>";
+                //add formatted attribute to panel content string
+              //  var year = attribute.split("_")[1];
+              //  popupContent += "<p><b>Median income in " + year + ":</b> " + props[attribute] + " dollars</p>";
 
-              //update popup content
-              popup = layer.getPopup();
-              popup.setContent(popupContent).update();
-          };
+                //update popup content
+              //  popup = layer.getPopup();
+            //    popup.setContent(popupContent).update();
+            };
+        });
+    };
+
+
+
+function createSequenceControls(attributes){
+      var SequenceControl = L.Control.extend({
+          options: {
+              position: 'bottomleft'
+          },
+
+  				onAdd: function () {
+              // create the control container div with a particular class name
+              var container = L.DomUtil.create('div', 'sequence-control-container');
+
+              //create range input element (slider)
+              $(container).append('<input class="range-slider" type="range">');
+
+  						//$(container).append('<button class="step" id="reverse" title="Reverse"><img src="img/noun_Reverse.png"></button>');
+  						//$(container).append('<button class="step" id="forward" title="Forward"><img src="img/noun_Play.png"></button>');
+              $(container).append('<button class="step" id="reverse">Reverse</button>');
+              $(container).append('<button class="step" id="forward">Forward</button>');
+
+              return container;
+          }
       });
+
+  		map.addControl(new SequenceControl());
+
+  		// add listeners after adding control
+
+  		$('.range-slider').attr({
+  				max: 8,
+  				min: 0,
+  				value: 0,
+  				step: 1
+  		});
+
+  		//Step 5: click listener for buttons
+  		$('.step').click(function(){
+  			//get the old index value
+  			var index = $('.range-slider').val();
+
+  			//Step 6: increment or decrement depending on button clicked
+  			if ($(this).attr('id') == 'forward'){
+  				index++;
+  				//Step 7: if past the last attribute, wrap around to first attribute
+  				index = index > 7 ? 0 : index;
+  			} else if ($(this).attr('id') == 'reverse'){
+  				index--;
+  				//Step 7: if past the first attribute, wrap around to last attribute
+  				index = index < 0 ? 7 : index;
+  			};
+
+  			//Step 8: update slider
+  			$('.range-slider').val(index);
+
+  			//Called in both step button and slider event listener handlers
+  			//Step 9: pass new attribute to update symbols
+  			updatePropSymbols(attributes[index]);
+
+  		});
+
+  	//Step 5: input listener for slider
+  	$('.range-slider').on('input', function(){
+  		//Step 6: get the new index value
+  		var index = $(this).val();
+  		console.log(index);
+
+  		//Called in both step button and slider event listener handlers
+  		//Step 9: pass new attribute to update symbols
+  		updatePropSymbols(attributes[index]);
+
+  	});
+
+  }
+
+function createLegend(attributes){
+      var LegendControl = L.Control.extend({
+          options: {
+              position: 'bottomright'
+          },
+
+          onAdd: function () {
+              // create the control container with a particular class name
+              var container = L.DomUtil.create('div', 'legend-control-container');
+
+              //PUT YOUR SCRIPT TO CREATE THE TEMPORAL LEGEND HERE
+  						$(container).append('<div id="legend">'+ 'Median income '+ attributes[0].split("op")[1] +'</div>');
+
+              return container;
+          }
+      });
+
+      map.addControl(new LegendControl());
   };
-
-  // calcMinValue(data)
-  // calcPropRadius(attValue)
-  // onEachFeature(feature, layer)
-  // pointToLayer(feature, latlng, attributes)
-  // createPropSymbols(response,attributes)
-  // getData(map)
-  // createSequenceControls(attributes)
-  // processData(data)
-  // updatePropSymbols(attribute)
-
 
 $(document).ready(createMap);
