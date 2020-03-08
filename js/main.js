@@ -1,8 +1,9 @@
 // global variables
 var map;
 var minValue;
-var SequenceControls
+var SequenceControls;
 var Legend;
+
 //Map function that all variables and elements are held.
 function createMap(){
     //create the map
@@ -18,15 +19,16 @@ function createMap(){
         id: 'mapbox/streets-v11',
         accessToken: 'pk.eyJ1IjoicGV0ZXJzb24yIiwiYSI6ImNrNmpza3ZwNDAweXEzZXF0bGxmb2g5eTQifQ.10E8d50dRzp7rkDlUiEj_g'
     }).addTo(map);
-
     getData(map);
+    //createPropSymbols();
+
 };
 //Calculate the min value of the proportional symbol
 function calcMinValue(data){
     var allValues = [];
 
     for(var state of data.features){
-
+          //loop through each year
           for (var year = 2012; year <= 2018; year+=1){
 
               var value = state.properties["State"+ String(year)];
@@ -62,11 +64,6 @@ function onEachFeature(feature, layer) {
     };
   };
 
-function createPopupContent(properties, attribute){
-    var popupContent = "<p><b>Median income:</b> " + year + ":</b> " + properties[attribute] + " dollars</p>";
-
-    return popupcontent;
-};
 
 function pointToLayer(feature, latlng, attributes){
     //Determine which attribute to visualize with proportional symbols
@@ -111,6 +108,23 @@ function pointToLayer(feature, latlng, attributes){
     return layer;
 };
 
+function createPopupContent(properties, attribute){
+    //var popupContent = "<p><b>Median income:</b> " + year + ":</b> " + properties[attribute] + " dollars</p>";
+
+//start
+    //build popup content string starting with city...Example 2.1 line 24
+    var popupContent = "<p><b>State:</b> " + feature.properties.state + "</p>";
+
+    //add formatted attribute to popup content string
+    var year = attribute.split("_")[1];
+    //popupContent += "<p><b>Population in " + year + ":</b> " + feature.properties[attribute] + " million</p>";
+    popupContent += "<p><b>Median income " + year + ":</b> " + properties[attribute] + " dollars</p>";
+
+//end
+
+    return popupcontent;
+};
+
 function createPropSymbols(response,attributes){
   L.geoJson(response, {
           pointToLayer : function(feature, latlng){
@@ -124,10 +138,13 @@ function getData(map){
       $.getJSON("data/mediandata.geojson", function(response){
 
         var attributes = processData(response);
+        console.log('processData');
 
         minValue = calcMinValue(response);
+        console.log('calcMinValue');
 
         createPropSymbols(response,attributes);
+        console.log('CreatePropSymbols');
 
         SequenceControls = createSequenceControls(attributes);
         Legend = createLegend(attributes);
